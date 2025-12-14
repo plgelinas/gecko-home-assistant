@@ -229,8 +229,15 @@ class GeckoCurrentTemperatureSensor(GeckoSensor):
         """Initialize the current temp sensor."""
         super().__init__(spaman, config_entry, automation_entity, entity_category)
         self.valid_entity = valid_entity
+        self._error_count = 0
         self.valid_entity.watch(self._on_change)
 
     def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
-        self._attr_available = self.valid_entity.is_available
+        if self.valid_entity.is_available:
+            self._attr_available = True
+            self._error_count = 0
+        else:
+            self._error_count += 1
+            if self._error_count > 5:
+                self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)

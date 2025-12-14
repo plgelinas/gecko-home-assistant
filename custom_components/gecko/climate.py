@@ -48,7 +48,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
         automation_entity: GeckoWaterHeater,
-        water_care: GeckoWaterCare,
+        water_care: GeckoWaterCare,       
     ) -> None:
         """Initialize Gecko climate entity."""
         self._attr_hvac_modes = [HVACMode.AUTO]
@@ -58,6 +58,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         )
         super().__init__(spaman, config_entry, automation_entity)
         self._water_care = water_care
+        self._error_count = 0
         if self._water_care.is_available:
             self._water_care.watch(self._on_change)
 
@@ -124,5 +125,11 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         """Fake function to set HVAC mode."""
 
     def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
-        self._attr_available = self._automation_entity.is_available
+        if self._automation_entity.is_available:
+            self._attr_available = True
+            self._error_count = 0
+        else:
+            self._error_count += 1
+            if self._error_count > 5:
+                self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)
