@@ -107,6 +107,6 @@ class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):
             self._error_count = 0
         else:
             self._error_count += 1
-            if self._error_count > 5:
+            if self._error_count > 10:
                 self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)
