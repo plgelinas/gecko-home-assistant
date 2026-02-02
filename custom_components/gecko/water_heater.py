@@ -12,7 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, WATER_HEATER
+from .const import DOMAIN, ERROR_COUNT_TOLERANCE, WATER_HEATER
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
@@ -56,6 +56,7 @@ class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):
         """Initialize Gecko climate entity."""
         self._attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE
         super().__init__(spaman, config_entry, automation_entity)
+        self._error_count = 0
 
     @property
     def icon(self) -> str:
@@ -101,5 +102,11 @@ class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):
         )
 
     def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
-        self._attr_available = self._automation_entity.is_available
+        if self._automation_entity.is_available:
+            self._attr_available = True
+            self._error_count = 0
+        else:
+            self._error_count += 1
+            if self._error_count > ERROR_COUNT_TOLERANCE:
+                self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)
