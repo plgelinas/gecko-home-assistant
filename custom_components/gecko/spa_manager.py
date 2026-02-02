@@ -63,21 +63,29 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
     async def _queue_loop(self) -> None:
         while True:
             event = await self._event_queue.get()
-            if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
-                # Wait for a single update so we have reminders and watercare
-                await self.facade.wait_for_one_update()
-                self._can_use_facade = True
-                await self.reload()
+            try:
+                if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
+                    # Wait for a single update so we have reminders and watercare
+                    try:
+                        await self.facade.wait_for_one_update()
+                    except Exception:  # noqa: BLE001
+                        _LOGGER.warning(
+                            "Failed to wait for one update during ready event"
+                        )
+                    self._can_use_facade = True
+                    await self.reload()
 
-            elif event in [
-                GeckoSpaEvent.CLIENT_HAS_RECONNECT_BUTTON,
-                GeckoSpaEvent.CLIENT_HAS_STATUS_SENSOR,
-            ]:
-                await self.reload()
+                elif event in [
+                    GeckoSpaEvent.CLIENT_HAS_RECONNECT_BUTTON,
+                    GeckoSpaEvent.CLIENT_HAS_STATUS_SENSOR,
+                ]:
+                    await self.reload()
 
-            elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
-                self._can_use_facade = False
-                await self.reload()
+                elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
+                    self._can_use_facade = False
+                    await self.reload()
+            except Exception:
+                _LOGGER.exception("Error processing event %s", event)
 
     async def handle_event(self, event: GeckoSpaEvent, **_kwargs: Any) -> None:
         """Handle spa manager events."""
