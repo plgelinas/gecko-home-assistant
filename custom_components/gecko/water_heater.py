@@ -28,14 +28,13 @@ async def async_setup_entry(
         facade: GeckoAsyncFacade = spaman.facade
         water_heaters = []
 
-        if spaman.facade.water_heater.is_available:
-            water_heaters.append(
-                GeckoHAWaterHeater(
-                    spaman,
-                    entry,
-                    facade.water_heater,
-                )
+        water_heaters.append(
+            GeckoHAWaterHeater(
+                spaman,
+                entry,
+                facade.water_heater,
             )
+        )
         if spaman.facade.mrsteam.is_available:
             water_heaters.append(GeckoHAWaterHeater(spaman, entry, facade.mrsteam))
 
