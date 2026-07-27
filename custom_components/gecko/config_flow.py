@@ -167,7 +167,8 @@ class GeckoOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
+        # config_entry is provided by the OptionsFlow base class property in
+        # HA 2024.11+; assigning it here crashes on 2025.12+ (upstream #233)
         self.options = dict(config_entry.options)
 
     async def async_step_init(
