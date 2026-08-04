@@ -27,6 +27,8 @@
  - Fix options flow crash on recent Home Assistant versions
    ([#233](https://github.com/gazoodle/gecko-home-assistant/issues/233))
  - Fix workflow branch filters so lint and validate actually run
+ - Update devcontainer to latest & pull codex in ... because it's made it easy to iterate now.
+ - Kudos to @DanSmith888, nice piece of work fixing these problems that I could never reproduce, thank you
 
 ## v0.1.32
  - Bump geckolib to 1.0.15
