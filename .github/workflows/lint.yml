@@ -4,10 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "main, dev"
+      - "main"
+      - "dev"
   pull_request:
     branches:
-      - "main, dev"
+      - "main"
+      - "dev"
 
 jobs:
   ruff:
@@ -20,7 +22,7 @@ jobs:
         - name: "Set up Python"
           uses: actions/setup-python@v6.2.0
           with:
-            python-version: "3.12"
+            python-version: "3.13.2"
             cache: "pip"
 
         - name: "Install requirements"
