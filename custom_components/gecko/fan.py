@@ -101,4 +101,4 @@ class GeckoFan(GeckoEntity, FanEntity):
     @property
     def pump(self) -> GeckoPump:
         """Get the pump."""
-        return cast(GeckoPump, self._automation_entity)
+        return cast("GeckoPump", self._automation_entity)

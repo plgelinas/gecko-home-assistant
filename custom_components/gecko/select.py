@@ -1,4 +1,4 @@
-"""Switch platform for Gecko."""  # noqa: A005
+"""Switch platform for Gecko."""
 
 import logging
 
