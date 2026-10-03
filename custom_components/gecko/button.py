@@ -24,7 +24,9 @@ async def async_setup_entry(
     """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     buttons = []
-    if spaman.can_use_facade:
+    # facade can be None while can_use_facade is still True: async_reset nulls
+    # it immediately but the teardown event is processed asynchronously
+    if spaman.can_use_facade and spaman.facade is not None:
         buttons.append(GeckoSnapshotButton(entry, spaman))
         buttons.extend(
             [
@@ -34,6 +36,8 @@ async def async_setup_entry(
         )
     if spaman.reconnect_button is not None:
         buttons.append(GeckoReconnectButton(entry, spaman))
+    if spaman.resync_button is not None:
+        buttons.append(GeckoResyncButton(entry, spaman))
     async_add_entities(buttons)
     spaman.platform_loaded(BUTTON)
 
@@ -74,6 +78,25 @@ class GeckoReconnectButton(GeckoButton):
     def icon(self) -> str:
         """Get the icon for this."""
         return "mdi:connection"
+
+
+class GeckoResyncButton(GeckoButton):
+    """Gecko Resync button class - re-reads spa state without reconnecting."""
+
+    def __init__(self, config_entry: ConfigEntry, spaman: GeckoSpaManager) -> None:
+        """Initialize the button class."""
+        super().__init__(
+            spaman, config_entry, spaman.resync_button, EntityCategory.DIAGNOSTIC
+        )
+
+    async def async_press(self) -> None:
+        """Press the button asynchronously."""
+        await self._automation_entity.async_press()
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for this."""
+        return "mdi:refresh"
 
 
 class GeckoSnapshotButton(GeckoEntityBase, ButtonEntity):

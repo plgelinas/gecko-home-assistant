@@ -63,6 +63,8 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
     async def _queue_loop(self) -> None:
         while True:
             event = await self._event_queue.get()
+            # One unhandled exception must not kill event processing for
+            # the lifetime of the integration
             try:
                 if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
                     # Wait for a single update so we have reminders and watercare
@@ -84,8 +86,10 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
                 elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
                     self._can_use_facade = False
                     await self.reload()
+            except asyncio.CancelledError:
+                raise
             except Exception:
-                _LOGGER.exception("Error processing event %s", event)
+                _LOGGER.exception("Exception handling queued event %s", event)
 
     async def handle_event(self, event: GeckoSpaEvent, **_kwargs: Any) -> None:
         """Handle spa manager events."""

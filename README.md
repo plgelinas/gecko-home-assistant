@@ -16,6 +16,20 @@
 
 # Version History
 
+## v0.1.33
+ - Bump geckolib to 1.0.16, which fixes the silent loss of the spa push subscription that
+   left entities stale for hours while the spa still showed as connected
+ - Add a "Last Data" diagnostic sensor showing when real spa data last arrived, which is the
+   correct signal for any user staleness automation
+ - Add a "Spa Resync" diagnostic button that re-reads spa state in place without reconnecting
+ - Guard the event queue loop so one exception no longer stops event processing permanently
+ - Guard button and select platform setup against the facade going away during a reload
+ - Fix options flow crash on recent Home Assistant versions
+   ([#233](https://github.com/gazoodle/gecko-home-assistant/issues/233))
+ - Fix workflow branch filters so lint and validate actually run
+ - Update devcontainer to latest & pull codex in ... because it's made it easy to iterate now.
+ - Kudos to @DanSmith888, nice piece of work fixing these problems that I could never reproduce, thank you
+
 ## v0.1.32
  - Bump geckolib to 1.0.15
 

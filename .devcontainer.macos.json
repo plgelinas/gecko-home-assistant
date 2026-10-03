@@ -1,7 +1,10 @@
 {
 	"name": "gazoodle/gecko-home-assistant",
-	"image": "mcr.microsoft.com/devcontainers/python:3.13",
-	"postCreateCommand": "scripts/setup",
+	"build": {
+		"dockerfile": ".devcontainer/Dockerfile",
+		"context": "."
+	},
+	"postCreateCommand": "scripts/setup && tokensave install --agent codex --git-hook no",
 	"forwardPorts": [
 		8123
 	],
@@ -18,6 +21,7 @@
 				"github.vscode-pull-request-github",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
+				"openai.chatgpt",
 				"ryanluker.vscode-coverage-gutters"
 			],
 			"settings": {
@@ -42,20 +46,25 @@
 			"packages": [
 				"ffmpeg",
 				"libturbojpeg0",
-				"libpcap-dev"
+				"libpcap-dev",
+				"iputils-ping"
 			]
 		}
 	},
+	"mounts": [
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.codex,target=/home/vscode/.codex,type=bind,consistency=cached"
+	],
 	"runArgs": [
 		"-v",
-		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh",
+		"${localEnv:HOME}${localEnv:USERPROFILE}/.ssh:/tmp/.ssh",
 		"--mount",
-		"type=bind,source=/Users/gary/Documents/Source/geckolib/src/geckolib,target=/usr/local/lib/python3.13/site-packages/geckolib,readonly",
+		"type=bind,source=/Users/gary/Documents/Source/geckolib/src/geckolib,target=/usr/local/lib/python3.14/site-packages/geckolib,readonly",
 		"--mount",
 		"type=bind,source=/Users/gary/Documents/Source/geckolib,target=/usr/src/geckolib",
 		"--add-host",
 		"spa=10.1.209.91",
 		"--add-host",
 		"udpspa=10.1.205.154"
-	]
+	],
+	"postStartCommand": "bash scripts/devcontainer-tokensave-sync.sh \"${containerWorkspaceFolder}\""
 }
