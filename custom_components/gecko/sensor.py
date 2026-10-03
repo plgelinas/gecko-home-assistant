@@ -32,6 +32,12 @@ async def async_setup_entry(
         sensors.append(
             GeckoSensor(spaman, entry, spaman.ping_sensor, EntityCategory.DIAGNOSTIC)
         )
+    if spaman.last_data_sensor is not None:
+        sensors.append(
+            GeckoSensor(
+                spaman, entry, spaman.last_data_sensor, EntityCategory.DIAGNOSTIC
+            )
+        )
     if spaman.radio_sensor is not None:
         sensors.append(
             GeckoSensor(spaman, entry, spaman.radio_sensor, EntityCategory.DIAGNOSTIC)

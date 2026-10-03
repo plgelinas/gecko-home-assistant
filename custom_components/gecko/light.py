@@ -107,4 +107,4 @@ class GeckoZone(GeckoEntity, LightEntity):
 
     @property
     def _zone(self) -> GeckoInMixZone:
-        return cast(GeckoInMixZone, self._automation_entity)
+        return cast("GeckoInMixZone", self._automation_entity)

@@ -1,7 +1,6 @@
-"""Switch platform for Gecko."""  # noqa: A005
+"""Switch platform for Gecko."""
 
 import logging
-from multiprocessing.spawn import spawn_main
 
 from geckolib import GeckoAutomationFacadeBase
 from homeassistant.components.select import SelectEntity
@@ -22,8 +21,9 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.can_use_facade:
-        assert spaman.facade is not None  # noqa: S101
+    # facade can be None while can_use_facade is still True: async_reset nulls
+    # it immediately but the teardown event is processed asynchronously
+    if spaman.can_use_facade and spaman.facade is not None:
         selects = []
         if spaman.facade.heatpump.is_available:
             selects.append(GeckoHeatPump(spaman, entry, spaman.facade.heatpump))
